@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 )
 
 var (
@@ -16,11 +17,20 @@ var (
 
 func init() {
 	const (
+		portShort   = "p"
+		portLong    = "port"
 		portDefault = "8080"
 		portUsage   = "HTTP listen port"
 	)
-	flag.StringVar(&port, "port", portDefault, portUsage)
-	flag.StringVar(&port, "p", portDefault, portUsage)
+	flag.Usage = func() {
+		usage := fmt.Sprintf("Usage: %s [OPTION]\nStarts simple hello service.\n", os.Args[0])
+		usage += "\nOptions are:\n\n"
+		usage += "  -" + portShort + ", --" + portLong + "\tHTTP port\n"
+		usage += "  -h, --help\tShow this help message\n\n"
+		fmt.Fprintf(os.Stderr, usage)
+	}
+	flag.StringVar(&port, portShort, portDefault, portUsage)
+	flag.StringVar(&port, portLong, portDefault, portUsage)
 }
 
 // Says 'Hello' to last path element
@@ -29,6 +39,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
+
 	flag.Parse()
 	http.HandleFunc("/", handler)
 	log.Fatal(http.ListenAndServe(":"+port, nil))
