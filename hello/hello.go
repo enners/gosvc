@@ -17,7 +17,12 @@ var (
 
 // Says 'Hello' to last path element
 func handler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Hello, %s.", r.URL.Path[1:])
+	if r.Method == http.MethodGet {
+		fmt.Fprintf(w, "Hello, %s.", r.URL.Path[1:])
+	} else {
+		w.Header().Set("Allowed", "GET")
+		w.WriteHeader(http.StatusMethodNotAllowed)
+	}
 }
 
 func main() {
